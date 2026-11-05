@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samurai Agent Chat</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome message will appear here when chat is empty -->
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chat-input-container">
+            <textarea id="chatInput" placeholder="Type your message here..."></textarea>
+            <button id="addLogBtn" class="add-log-btn">📋 Add a log</button>
+            <div id="logInputSection" class="log-input-section" style="display: none;">
+                <textarea id="logInput" class="log-input" placeholder="Paste your logs here..."></textarea>
+                <button id="clearLogBtn" class="clear-log-btn">Clear log</button>
+            </div>
+            <div class="chat-input-hint">💡 Tip: Try these commands:<br>"please read the latest code" — Extract and analyze your code<br>"create specs" — Generate specifications<br>Press Enter to send • Shift + Enter for a new line<div>
+        </div>
+    </div>
+    <script src="chat.js"></script>
+</body>
+</html>

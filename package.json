@@ -1,0 +1,221 @@
+{
+  "name": "samurai-agent",
+  "displayName": "Samurai Agent \u2014 Prevent JS/TS Regressions from AI Edits",
+  "description": "Shows regression risk right after AI code edits and lets you review risky JS/TS changes before they ship.",
+  "version": "0.4.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suzuking1192/samurai-agent-vscode.git"
+  },
+  "publisher": "SamuraiAgent",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Debuggers"
+  ],
+  "keywords": [
+    "ai coding",
+    "ai-generated code",
+    "cursor",
+    "copilot",
+    "bug detection",
+    "runtime analysis",
+    "regression bugs",
+    "bug fix review",
+    "ai code review",
+    "debugging",
+    "javascript",
+    "typescript",
+    "complex bugs",
+    "claude"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "homepage": "https://suzuking1192.github.io/samurai-agent-vscode/",
+  "bugs": {
+    "url": "https://github.com/suzuking1192/samurai-agent-vscode/issues"
+  },
+  "icon": "icon.png",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "walkthroughs": [
+      {
+        "id": "samurai-welcome",
+        "title": "Get Started with Samurai Agent",
+        "description": "Visualize your code execution flow and debug complex errors.",
+        "steps": [
+          {
+            "id": "open-sidebar",
+            "title": "Open Samurai Agent",
+            "description": "Click the Samurai icon in the Activity Bar to start debugging.\n[Open Samurai Agent](command:workbench.view.extension.samurai-agent)",
+            "media": {
+              "image": "icon.png",
+              "altText": "Samurai Agent Logo"
+            },
+            "completionEvents": [
+              "onView:samurai-agent.agentPanel"
+            ]
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "samurai-agent.openPanel",
+        "title": "Open Samurai Agent Panel",
+        "category": "Samurai Agent"
+      },
+      {
+        "command": "samurai-agent.addSelection",
+        "title": "Add to Samurai Context",
+        "category": "Samurai Agent"
+      },
+      {
+        "command": "samurai-agent.startRegressionReview",
+        "title": "Start Regression Review",
+        "category": "Samurai Agent"
+      }
+    ],
+    "configuration": {
+      "title": "Samurai Agent",
+      "properties": {
+        "samurai-agent.regressionDetection.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable auto regression bug detection for AI-generated code changes."
+        },
+        "samurai-agent.regressionDetection.riskThreshold": {
+          "type": "string",
+          "enum": [
+            "always",
+            "moderate",
+            "high"
+          ],
+          "default": "always",
+          "description": "When to show regression risk warnings",
+          "enumDescriptions": [
+            "Show warnings for all detected AI edit bursts",
+            "Show warnings when regression risk is moderate or higher",
+            "Show warnings only when regression risk is high"
+          ]
+        },
+        "samurai-agent.regressionDetection.cooldownSeconds": {
+          "type": "number",
+          "default": 60,
+          "description": "Cooldown period in seconds between regression detection notifications."
+        },
+        "samurai-agent.regressionDetection.idleSeconds": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 120,
+          "description": "Seconds of inactivity after which an edit burst is considered complete. Increase if AI tools trigger premature warnings during thinking pauses."
+        },
+        "samurai-agent.regressionDetection.maxBurstDurationSeconds": {
+          "type": "number",
+          "default": 300,
+          "minimum": 15,
+          "maximum": 600,
+          "description": "Maximum duration in seconds for a single edit burst. Safety cap to prevent infinite accumulation during long refactorings."
+        },
+        "samurai-agent.enableDebugLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug logging to create diagnostic output folders for troubleshooting."
+        },
+        "samurai-agent.apiKeys": {
+          "markdownDescription": "Open the **Samurai Agent panel** \u2192 Settings tab and add a model: choose a provider (OpenAI, Google, or Anthropic), enter the model name, and paste your API key. Keys are stored in VS Code SecretStorage.",
+          "type": "null",
+          "description": "Add a provider, model name, and API key in the Samurai Agent panel. Keys are stored securely in VS Code SecretStorage."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "samurai-agent",
+          "title": "Samurai Agent",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "samurai-agent": [
+        {
+          "id": "samurai-agent.agentPanel",
+          "name": "Samurai Agent",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package && node scripts/copy-external-deps.js",
+    "compile": "node scripts/build-with-env.js webpack --devtool source-map",
+    "watch": "node scripts/build-with-env.js webpack --watch --devtool source-map",
+    "package": "node scripts/build-with-env.js webpack --mode production --devtool false",
+    "package:vscode": "npx --yes @vscode/vsce package --no-dependencies",
+    "publish:vscode": "npx --yes @vscode/vsce publish --no-dependencies",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:vscode": "vscode-test",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^10.9.1",
+    "@types/babel__traverse": "^7.28.0",
+    "@types/chrome-remote-interface": "^0.33.0",
+    "@types/diff": "^8.0.0",
+    "@types/jest": "^29.5.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "copy-webpack-plugin": "^12.0.2",
+    "dotenv-cli": "^10.0.0",
+    "eslint": "^9.34.0",
+    "html-webpack-plugin": "^5.6.4",
+    "jest": "^29.5.0",
+    "jsdom": "^27.0.0",
+    "ts-jest": "^29.4.4",
+    "ts-loader": "^9.5.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "zod-to-ts": "^2.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.63.1",
+    "@babel/parser": "^7.28.5",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
+    "@google/genai": "^1.0.0",
+    "chrome-remote-interface": "^0.33.2",
+    "diff": "^8.0.3",
+    "dotenv": "^17.2.2",
+    "openai": "^5.23.0",
+    "simple-git": "^3.25.0",
+    "ts-morph": "^27.0.2",
+    "web-tree-sitter": "^0.20.8",
+    "ws": "^7.2.0",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.25.0"
+  },
+  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
+}

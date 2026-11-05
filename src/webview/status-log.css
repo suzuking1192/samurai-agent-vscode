@@ -1,0 +1,146 @@
+/* Status Log Component Styles
+ * Terminal-like log display for real-time debugging status updates
+ */
+
+.status-log-container {
+  font-family: var(--vscode-editor-font-family);
+  font-size: 12px;
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.status-item.phase {
+  color: var(--vscode-textLink-foreground); /* Blue-ish */
+  font-weight: 600;
+}
+
+.status-item.tool {
+  color: var(--vscode-debugConsole-warningForeground); /* Orange-ish */
+}
+
+.status-icon {
+  margin-right: 8px;
+  min-width: 16px;
+}
+
+.status-text {
+  flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Loading dots animation (only for the active last step) */
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.loading-dots span {
+  animation: blink 1.4s infinite both;
+  margin-left: 2px;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+/* Terminal Window Styles */
+.terminal-window {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  display: none;
+}
+
+.terminal-header {
+  background: #2d2d2d;
+  padding: 4px 8px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  border-radius: 6px 6px 0 0;
+}
+
+.terminal-header .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.terminal-header .dot.red {
+  background: #ff5f56;
+}
+
+.terminal-header .dot.yellow {
+  background: #ffbd2e;
+}
+
+.terminal-header .dot.green {
+  background: #27c93f;
+}
+
+.terminal-header .title {
+  margin-left: 8px;
+  color: #ccc;
+  font-size: 10px;
+  flex: 1;
+}
+
+.terminal-content {
+  padding: 8px;
+  margin: 0;
+  color: #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.terminal-content span {
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.terminal-content .log-stderr {
+  color: #ff6b6b;
+}
+
+
+
+

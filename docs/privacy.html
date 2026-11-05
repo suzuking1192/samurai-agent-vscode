@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy · Samurai Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="canonical" href="https://suzuking1192.github.io/samurai-agent-vscode/privacy.html" />
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased">
+    <main class="mx-auto max-w-3xl px-6 py-16">
+      <a href="index.html" class="text-sm text-indigo-400 hover:underline">← Samurai Agent</a>
+      <h1 class="mt-6 text-3xl font-semibold text-white">Privacy</h1>
+      <p class="mt-2 text-sm text-slate-400">Effective for the open-source MIT release.</p>
+      <div class="mt-8 space-y-6 text-slate-300 leading-relaxed">
+        <p>
+          Samurai Agent is a local VS Code / Open VSX extension. It does not phone home and does not ship usage analytics.
+        </p>
+        <p>
+          When you run a review or debug session, prompts and the minimum required code context are sent only to the
+          LLM provider you configured (OpenAI, Google Gemini, or Anthropic) using the API key you stored in VS Code
+          Secret Storage. That provider’s privacy policy applies to those requests.
+        </p>
+        <p>
+          API keys are stored in VS Code Secret Storage on your machine. Provider and model name preferences are stored
+          in local settings JSON without the key.
+        </p>
+        <p>
+          The extension does not modify your project source files. Sandboxed analysis, when used, runs against copies
+          or generated scripts only.
+        </p>
+        <p>
+          Questions: open an issue on
+          <a class="text-indigo-400 underline" href="https://github.com/suzuking1192/samurai-agent-vscode/issues">GitHub</a>.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

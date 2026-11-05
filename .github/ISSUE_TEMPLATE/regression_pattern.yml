@@ -1,0 +1,29 @@
+name: New regression pattern
+description: Propose a JS/TS risk pattern for EditBurst / RegressionRiskScorer
+labels: ["good first issue", "patterns"]
+body:
+  - type: textarea
+    id: pattern
+    attributes:
+      label: Pattern
+      description: What code change is risky? Include a short before/after snippet.
+    validations:
+      required: true
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: Suggested confidence
+      options:
+        - high
+        - medium
+    validations:
+      required: true
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Same-hunk mitigation
+      description: What nearby code should suppress this signal?
+  - type: markdown
+    attributes:
+      value: |
+        Implement in `src/services/RegressionRiskScorer.ts` and/or `src/agent/tools/analysis/`. See ARCHITECTURE.md.

@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blade: wide triangle tapering to a point -->
+  <polygon points="22,1 14,13 9,8" fill="white"/>
+  <!-- Crossguard: perpendicular bar extending beyond blade edges -->
+  <polygon points="9,7 15,13 13.5,14.5 7.5,8.5" fill="white"/>
+  <!-- Handle: narrow bar, clearly thinner than blade -->
+  <polygon points="10,12 11,11 6,16 5,17" fill="white"/>
+  <!-- Pommel -->
+  <circle cx="4" cy="18.5" r="1.6" fill="white"/>
+</svg>

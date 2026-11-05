@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catch JS/TS regressions right after AI edits | Samurai Agent</title>
+    
+    <!-- OGP and Social Sharing Meta Tags -->
+    <meta property="og:title" content="Catch JS/TS regressions right after AI edits" />
+    <meta property="og:description" content="PR review is too late. Samurai reviews AI edits the moment they happen — inside your IDE." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://suzuking1192.github.io/samurai-agent-vscode/" />
+    <meta property="og:image" content="https://suzuking1192.github.io/samurai-agent-vscode/assets/ogp/samurai_lp_ogp.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Catch JS/TS regressions right after AI edits" />
+    <meta name="twitter:description" content="PR review is too late. Samurai reviews AI edits the moment they happen — inside your IDE." />
+    <meta name="twitter:image" content="https://suzuking1192.github.io/samurai-agent-vscode/assets/ogp/samurai_lp_ogp.png" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://suzuking1192.github.io/samurai-agent-vscode/" />
+
+    <!-- Meta Description -->
+    <meta name="description" content="Samurai Agent catches JS/TS regressions right after AI edits. Get root-cause context from real runtime data — inside your IDE." />
+
+    <!-- Preconnect to external CDNs -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script defer crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script defer src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Samurai Agent",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Cross-platform",
+      "description": "Samurai Agent catches JS/TS regressions right after AI edits. Get root-cause context from real runtime data — inside your IDE.",
+      "url": "https://suzuking1192.github.io/samurai-agent-vscode/",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "description": "Open source. Bring your own API key."
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "Samurai Agent",
+        "url": "https://suzuking1192.github.io/samurai-agent-vscode/"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Samurai Agent modify my code?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Samurai Agent never edits your source code. All runtime analysis is performed in an isolated sandbox using test scripts only."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When should I use Samurai Agent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Samurai Agent works best for silent bugs where logs don't explain what's wrong, complex async or state-related issues, AI-generated code that's hard to reason about, and bugs that other AI coding agents fail to fix."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When should I not use Samurai Agent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Samurai Agent is not optimized for simple syntax errors, formatting or lint issues, or one-line bugs with obvious stack traces. In those cases, traditional linters or AI code fixes are usually faster."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Samurai Agent replace AI coding agents like Cursor or Copilot?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Samurai Agent is complementary. AI coding agents focus on writing code. Samurai Agent focuses on reviewing AI-generated code changes to catch regression risks before you ship."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Samurai Agent execute my code?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes — but only in a controlled sandbox environment. Your original files are never modified, and execution is limited to debugging purposes only."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my code or chat data used for training?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Samurai Agent does not use your code or chat conversations for training. Your source code is never stored, and debugging conversations are not retained."
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased">
+    <nav class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-sm">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <div class="flex items-center gap-3">
+          <img
+            src="assets/logo/icon.png"
+            alt="Samurai Agent logo"
+            class="h-10 w-10 rounded-lg border border-slate-800 bg-slate-900 p-1 shadow shadow-slate-900/50"
+          />
+          <span class="text-lg font-semibold tracking-wide text-white">
+            Samurai Agent
+          </span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a
+            href="https://marketplace.visualstudio.com/items?itemName=SamuraiAgent.samurai-agent"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded-full bg-indigo-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/40 transition hover:bg-indigo-400"
+          >
+            Install for VS Code
+          </a>
+          <a
+            href="https://github.com/suzuking1192/samurai-agent-vscode-vscode"
+            class="text-sm text-slate-400 hover:text-indigo-400 transition underline"
+          >
+            View source
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <section class="px-6 py-20">
+        <div class="mx-auto flex max-w-5xl flex-col items-center text-center">
+          <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            Catch JS/TS regressions right after AI edits
+          </h1>
+          <p class="mt-6 max-w-2xl text-lg text-slate-300">
+            PR review is too late. Samurai reviews AI edits the moment they happen — inside your IDE.
+          </p>
+          <p class="mt-4 max-w-2xl text-sm text-slate-400">
+            Open source under MIT. Nothing runs until you add a provider, a model name, and your own API key. There is no default model and no sponsored proxy.
+          </p>
+          <div class="mt-6 flex items-center justify-center gap-x-4">
+            <span class="text-sm font-medium text-slate-400">Built for:</span>
+            <div class="flex items-center gap-x-3">
+              <img src="assets/logo/JavaScript-logo.png" alt="JavaScript logo" class="h-8 w-8 object-contain" />
+              <img src="assets/logo/Typescript_logo_2020.svg.png" alt="TypeScript logo" class="h-8 w-8 object-contain" />
+            </div>
+          </div>
+          <div class="mt-10 flex flex-col items-center gap-4">
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <a
+                href="https://marketplace.visualstudio.com/items?itemName=SamuraiAgent.samurai-agent"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-full bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/40 transition hover:bg-indigo-400"
+              >
+                Install for VS Code
+              </a>
+              <a
+                href="https://open-vsx.org/extension/SamuraiAgent/samurai-agent"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-full border border-slate-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                Install for Cursor, Windsurf & more
+              </a>
+            </div>
+            <a
+              href="https://github.com/suzuking1192/samurai-agent-vscode-vscode"
+              class="text-sm text-slate-400 hover:text-indigo-400 transition underline"
+            >
+              Contribute on GitHub &rarr;
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="px-6 py-20">
+        <div class="mx-auto max-w-5xl text-center">
+          <h2 class="text-3xl font-semibold text-white sm:text-4xl">
+            See Samurai Agent in Action
+          </h2>
+          <div class="mt-10 w-full">
+            <iframe
+              src="https://www.youtube.com/embed/pHPy8L_a-B4"
+              title="Samurai Agent demo video"
+              width="640"
+              height="480"
+              class="aspect-[4/3] w-full rounded-2xl border border-slate-800 bg-slate-900 shadow-lg shadow-slate-900/40"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="px-6 py-20">
+        <div class="mx-auto max-w-6xl">
+          <h2 class="text-center text-3xl font-semibold text-white sm:text-4xl">
+            AI writes code faster than ever — but we’re left wondering what it broke.  Samurai Agent is a guardrail for AI-generated code inside your IDE.
+          </h2>
+          
+          <section class="mt-20">
+            <div class="mx-auto max-w-5xl">
+              <h2 class="text-center text-3xl font-semibold text-white sm:text-4xl">
+                How it works
+              </h2>
+              <div class="mt-12 space-y-8 md:space-y-10">
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+                  <div class="flex-shrink-0">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-lg font-semibold text-white">
+                      1
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-white">
+                      You write code with your AI coding tools (e.g. Cursor or Claude Code)
+                    </h3>
+                    <p class="mt-2 text-slate-300">
+                      Samurai Agent automatically detects AI edits.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+                  <div class="flex-shrink-0">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-lg font-semibold text-white">
+                      2
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-white">
+                      Samurai Agent calculates regression risk and shows a warning in your IDE.
+                    </h3>
+                    <p class="mt-2 text-slate-300">
+                      It uses JavaScript/TypeScript-specific bug data, so detection is fast and lightweight.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+                  <div class="flex-shrink-0">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-lg font-semibold text-white">
+                      3
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-white">
+                      Start a code review with one click.
+                    </h3>
+                    <p class="mt-2 text-slate-300">
+                      Samurai Agent reviews the change using JS/TS bug data and runtime signals to catch regression bugs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-12 text-center text-slate-400">
+                Samurai doesn’t replace your AI coding agent — it reviews AI-generated code to catch regressions before you ship.
+              </p>
+            </div>
+          </section>
+
+          <section class="mt-20">
+            <div class="mx-auto max-w-5xl">
+              <h2 class="text-center text-3xl font-semibold text-white sm:text-4xl">
+                What makes Samurai fundamentally different?
+              </h2>
+              <p class="mt-4 text-center text-lg text-slate-300">
+                Samurai moves code review from PR-time to edit-time — and uses the AI's plan + JS/TS bug patterns to catch real regressions.
+              </p>
+              <div class="mt-12 grid gap-8 md:grid-cols-2">
+                <article class="rounded-2xl border border-indigo-500/50 bg-slate-900/80 p-8 ring-2 ring-indigo-500/30">
+                  <div class="mb-6 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900">
+                    <img
+                      src="assets/icons/samurai_codereview_fast.jpeg"
+                      alt="Timeline comparison: edit-time vs PR-time review"
+                      class="h-56 w-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 class="text-xl font-semibold text-white">
+                    Edit-time review (not PR-time)
+                  </h3>
+                  <p class="mt-4 text-slate-300">
+                    Traditional tools review after commit or pull request. Samurai reviews immediately after each AI edit — before context is lost and regressions spread.
+                  </p>
+                  <ul class="mt-4 list-inside list-disc space-y-1 text-slate-300">
+                    <li>Runs right after AI edits</li>
+                    <li>No PR delay</li>
+                    <li>Immediate feedback in your IDE</li>
+                  </ul>
+                </article>
+                <article class="rounded-2xl border border-slate-800 bg-slate-900/60 p-8">
+                  <div class="mb-6 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900">
+                    <img
+                      src="assets/icons/samurai_has_plan_and_jt_ts_aware.png"
+                      alt="Plan-aware and JS/TS regression-aware architecture"
+                      loading="lazy"
+                      class="h-56 w-full object-contain"
+                    />
+                  </div>
+                  <h3 class="text-xl font-semibold text-white">
+                    Plan-aware + JS/TS regression-aware
+                  </h3>
+                  <p class="mt-4 text-slate-300">
+                    Because Samurai runs inside your IDE, it can use the AI's planning context and real JS/TS bug patterns to flag subtle logic conflicts — not generic LLM advice.
+                  </p>
+                  <ul class="mt-4 list-inside list-disc space-y-1 text-slate-300">
+                    <li>Uses AI plan + conversation context</li>
+                    <li>JS/TS-specific bug patterns</li>
+                    <li>Focused regression warnings</li>
+                  </ul>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="mt-20">
+            <div class="mx-auto max-w-5xl">
+              <h2 class="text-center text-3xl font-semibold text-white sm:text-4xl">
+                Code review hasn't evolved. AI coding has.
+              </h2>
+              <p class="mt-6 text-center text-lg text-slate-300">
+                AI tools changed how we write code. Code review is still stuck at PR time.
+              </p>
+              <div class="mt-8 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+                <table class="w-full border-collapse text-left text-sm">
+                  <thead>
+                    <tr class="bg-slate-900/80">
+                      <th class="px-6 py-4 font-semibold text-slate-200">Workflow</th>
+                      <th class="px-6 py-4 font-semibold text-slate-200">When review happens</th>
+                      <th class="px-6 py-4 font-semibold text-slate-200">Context available</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-slate-300">
+                    <tr class="border-t border-slate-800">
+                      <td class="px-6 py-4">Pull Request review</td>
+                      <td class="px-6 py-4">After commit</td>
+                      <td class="px-6 py-4">Diff-based context only</td>
+                    </tr>
+                    <tr class="border-t border-slate-800">
+                      <td class="px-6 py-4">Manual review</td>
+                      <td class="px-6 py-4">Later (if remembered)</td>
+                      <td class="px-6 py-4">Human memory + limited context</td>
+                    </tr>
+                    <tr class="border-l-2 border-indigo-500 border-t border-slate-800 bg-indigo-500/5">
+                      <td class="px-6 py-4 font-medium text-white">Samurai (edit-time review)</td>
+                      <td class="px-6 py-4">Immediately after AI edits</td>
+                      <td class="px-6 py-4">Full IDE context + AI planning conversation + JS/TS bug patterns</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="mt-6 text-center text-slate-300">
+                Because Samurai runs inside your IDE, it can access AI planning context, analyze your full JS/TS project state, and detect subtle regression patterns — before changes reach a pull request.
+              </p>
+            </div>
+          </section>
+
+          <section class="mt-20">
+            <div class="mx-auto max-w-5xl">
+              <div id="regression-examples-carousel"></div>
+            </div>
+          </section>
+
+
+          <section class="mt-20" id="architecture">
+            <div class="mx-auto max-w-5xl">
+              <h2 class="text-center text-3xl font-semibold text-white sm:text-4xl">
+                Architecture for contributors
+              </h2>
+              <p class="mt-4 text-center text-lg text-slate-300">
+                The pipeline is layered. Each stage below names what happens, whether a model is called, and where the code lives.
+              </p>
+              <div class="mt-10 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+                <img
+                  src="assets/architecture/edit-time-flow.svg"
+                  alt="Edit-time flow: AI edits, detect and score, IDE warning, agent review, report"
+                  class="mx-auto w-full max-w-4xl"
+                  loading="lazy"
+                />
+              </div>
+
+              <div class="mt-12 space-y-12">
+                <article>
+                  <h3 class="text-xl font-semibold text-white">1. Edit-time detection (no LLM)</h3>
+                  <p class="mt-3 text-slate-300">
+                    <code class="text-indigo-300">EditBurstTracker</code> watches the editor and the filesystem (CLI tools write straight to disk).
+                    <code class="text-indigo-300">RegressionRiskScorer</code> scores the diff with JS/TS patterns, paths, and scope — no model call.
+                    <code class="text-indigo-300">RegressionNotificationService</code> shows the IDE warning.
+                    Files: <code class="text-slate-400">src/services/EditBurstTracker.ts</code>, <code class="text-slate-400">RegressionRiskScorer.ts</code>, <code class="text-slate-400">RegressionNotificationService.ts</code>.
+                  </p>
+                  <div class="mermaid mt-4 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs">flowchart LR
+  edit[AI edit] --> burst[EditBurstTracker]
+  burst --> score[RegressionRiskScorer]
+  score --> banner[IDE warning]</div>
+                </article>
+
+                <article>
+                  <h3 class="text-xl font-semibold text-white">2. Context the review receives</h3>
+                  <p class="mt-3 text-slate-300">
+                    The review starts with the diff, the risk signals, and plan files from Cursor, Claude Code, Windsurf, or Antigravity
+                    (<code class="text-indigo-300">AIToolPlanDiscovery</code>).
+                  </p>
+                </article>
+
+                <article>
+                  <h3 class="text-xl font-semibold text-white">3. The review loop</h3>
+                  <p class="mt-3 text-slate-300">
+                    <code class="text-indigo-300">PlanningAgent.execute</code> repeats until a final report or timeout: thought, tool calls, or final response.
+                    <code class="text-indigo-300">RuleSelector</code> picks prompts; <code class="text-indigo-300">ToolRegistry</code> runs tools.
+                    Files: <code class="text-slate-400">src/agent/core/PlanningAgent.ts</code>, <code class="text-slate-400">RuleSelector.ts</code>, <code class="text-slate-400">src/agent/tools/</code>.
+                  </p>
+                  <div class="mermaid mt-4 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs">flowchart TD
+  start[PlanningAgent.execute] --> think[Model: thought / tools / final]
+  think -->|tools| registry[ToolRegistry]
+  registry --> think
+  think -->|final_response| report[Review report]
+  think -->|timeout| partial[Partial report]</div>
+                </article>
+
+                <article>
+                  <h3 class="text-xl font-semibold text-white">4. Tools the agent can call</h3>
+                  <p class="mt-3 text-slate-300">
+                    Search the codebase, read git diff/history, LSP diagnostics, static analysis, graph context, sandboxed file reads, and Node runtime inspection.
+                    Original project files are never modified.
+                    Engine tools live under <code class="text-slate-400">src/agent/tools/engine/</code>.
+                  </p>
+                </article>
+
+                <article>
+                  <h3 class="text-xl font-semibold text-white">5. Debugging path (separate from regression review)</h3>
+                  <p class="mt-3 text-slate-300">
+                    Epicenter search, hypothesis generation, runtime analysis, and the root-cause report live under
+                    <code class="text-slate-400">src/agent/tools/debugging/</code> and <code class="text-slate-400">src/agent/prompts/debugging/</code>.
+                    This is why the tree looks large — keep it mentally separate from the edit-time review path.
+                  </p>
+                </article>
+
+                <article>
+                  <h3 class="text-xl font-semibold text-white">6. Model call (bring your own key)</h3>
+                  <p class="mt-3 text-slate-300">
+                    <code class="text-indigo-300">LLMProviderService</code> uses the active user entry: provider, typed model name, and API key from VS Code Secret Storage.
+                    No built-in catalog, no proxy, no sponsored tier.
+                    Files: <code class="text-slate-400">src/agent/llm/</code>, <code class="text-slate-400">src/common/utils/llmSecretStore.ts</code>.
+                  </p>
+                </article>
+
+                <article>
+                  <h3 class="text-xl font-semibold text-white">7. Where to change it</h3>
+                  <ul class="mt-3 list-inside list-disc space-y-2 text-slate-300">
+                    <li>JS/TS risk pattern → <code class="text-slate-400">src/services/RegressionRiskScorer.ts</code> and <code class="text-slate-400">src/agent/tools/analysis/</code></li>
+                    <li>Review prompt or rule → <code class="text-slate-400">src/agent/core/RuleSelector.ts</code> and <code class="text-slate-400">src/agent/prompts/</code></li>
+                    <li>New provider protocol → client in <code class="text-slate-400">src/agent/llm/</code> plus the add-model form (model names are not listed in the repo)</li>
+                  </ul>
+                  <div class="mermaid mt-4 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs">flowchart TB
+  ext[src/extension.ts] --> services[src/services]
+  ext --> agent[src/agent/core]
+  agent --> tools[src/agent/tools]
+  agent --> prompts[src/agent/prompts]
+  agent --> llm[src/agent/llm]
+  ext --> webview[src/webview]</div>
+                  <p class="mt-4 text-center text-sm text-slate-400">
+                    Full write-up: <a class="text-indigo-400 underline" href="https://github.com/suzuking1192/samurai-agent-vscode/blob/main/ARCHITECTURE.md">ARCHITECTURE.md</a>
+                  </p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="mt-20">
+            <div class="mx-auto max-w-5xl">
+              <h2 class="text-center text-3xl font-semibold text-white sm:text-4xl">
+                FAQ
+              </h2>
+              <div id="faq-accordion" class="mt-12"></div>
+            </div>
+          </section>
+
+          <section class="mt-12 py-12">
+            <div class="mx-auto max-w-5xl">
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-8">
+                <h2 class="text-xl font-semibold text-white">
+                  Questions or feedback?
+                </h2>
+                <p class="mt-2 text-slate-300">
+                  Not sure if Samurai fits your use case, or have feedback after trying it?
+                  Open a GitHub issue — contributions and questions are welcome.
+                </p>
+                <a
+                  href="https://github.com/suzuking1192/samurai-agent-vscode-vscode/issues"
+                  role="button"
+                  class="mt-6 inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-800/50 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                >
+                  Open a GitHub issue
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="px-6 py-20">
+        <div class="mx-auto flex max-w-3xl flex-col items-center rounded-3xl border border-slate-800 bg-slate-900/60 px-8 py-16 text-center">
+          <h2 class="text-3xl font-semibold text-white sm:text-4xl">
+            Get Started with Samurai Agent
+          </h2>
+          <div class="mt-10 flex flex-col items-center gap-4">
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <a
+                href="https://marketplace.visualstudio.com/items?itemName=SamuraiAgent.samurai-agent"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-full bg-indigo-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/40 transition hover:bg-indigo-400"
+              >
+                Install for VS Code
+              </a>
+              <a
+                href="https://open-vsx.org/extension/SamuraiAgent/samurai-agent"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="rounded-full border border-slate-600 px-8 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                Install for Cursor, Windsurf & more
+              </a>
+            </div>
+            <a
+              href="https://github.com/suzuking1192/samurai-agent-vscode-vscode"
+              class="text-sm text-slate-400 hover:text-indigo-400 transition underline"
+            >
+              Contribute on GitHub &rarr;
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="border-t border-slate-800 text-slate-500">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-8">
+        <div class="flex flex-col space-y-2">
+          <span class="text-sm font-medium text-slate-300">
+            Built by a dev who got tired of debugging AI code.
+            <a href="https://x.com/yuto_samurai_ai" class="underline hover:text-white" target="_blank" rel="noopener noreferrer"
+              >Follow the journey!</a
+            >
+          </span>
+          <div class="flex items-center gap-4 text-sm">
+            <span>© 2026 Samurai Agent · MIT License</span>
+            <span class="text-slate-600">|</span>
+            <a href="privacy.html" class="hover:text-slate-300">Privacy</a>
+          </div>
+        </div>
+        <div class="flex">
+          <a href="https://github.com/suzuking1192/samurai-agent-vscode" class="hover:text-slate-300" target="_blank" rel="noopener noreferrer">
+            <span class="sr-only">GitHub</span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.165 6.839 9.49.5.092.682-.217.682-.483 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.379.202 2.398.1 2.65.64.7 1.03 1.595 1.03 2.688 0 3.848-2.339 4.695-4.566 4.942.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      const FAQItem = ({ question, answer, isOpen, onToggle, id }) => {
+        const answerId = `faq-answer-${id}`;
+        const buttonId = `faq-button-${id}`;
+
+        return (
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+            <button
+              id={buttonId}
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls={answerId}
+              onClick={onToggle}
+              className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-900/80 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+            >
+              <span className="text-lg font-semibold text-white pr-4">{question}</span>
+              <svg
+                className={`h-5 w-5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${
+                  isOpen ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              id={answerId}
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="px-6 pb-6 text-slate-300 leading-relaxed whitespace-pre-line">
+                {answer}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const FAQAccordion = () => {
+        const [openIndex, setOpenIndex] = useState(null);
+
+        const faqs = [
+          {
+            id: 1,
+            question: 'Does Samurai Agent modify my code?',
+            answer: 'No. Samurai Agent never edits your source code.\nAll runtime analysis is performed in an isolated sandbox using test scripts only.'
+          },
+          {
+            id: 2,
+            question: 'When should I use Samurai Agent?',
+            answer: "Samurai Agent works best for:\n- Silent bugs where logs don't explain what's wrong\n- Complex async or state-related issues\n- AI-generated code that's hard to reason about\n- Bugs that other AI coding agents fail to fix"
+          },
+          {
+            id: 3,
+            question: 'When should I *not* use Samurai Agent?',
+            answer: 'Samurai Agent is not optimized for:\n- Simple syntax errors\n- Formatting or lint issues\n- One-line bugs with obvious stack traces\nIn those cases, traditional linters or AI code fixes are usually faster.'
+          },
+          {
+            id: 4,
+            question: 'Does Samurai Agent replace AI coding agents like Cursor or Copilot?',
+            answer: "No. Samurai Agent is complementary.\nAI coding agents focus on writing code. \nSamurai Agent focuses on reviewing AI-generated code changes to catch regression risks before you ship.\nMany users use Samurai Agent as a guardrail: AI writes the code, Samurai Agent reviews it for JS/TS regressions inside the IDE."
+          },
+          {
+            id: 5,
+            question: 'Does Samurai Agent execute my code?',
+            answer: 'Yes — but only in a controlled sandbox environment.\nYour original files are never modified, and execution is limited to debugging purposes only.'
+          },
+          {
+            id: 6,
+            question: 'Is my code or chat data used for training?',
+            answer: 'No.\nSamurai Agent does not train on your code or chats.\nThe extension does not phone home.\nPrompts go only to the LLM provider you configured with your own API key (OpenAI, Google, or Anthropic), under that provider\'s terms.'
+          },
+          {
+            id: 7,
+            question: 'Do I need a beta code or free credits?',
+            answer: 'No.\nSamurai Agent is fully open source.\nAdd a provider (OpenAI, Gemini, or Anthropic), type any model name that provider accepts, and paste your API key in Settings.\nThere is no built-in model list and no proxy.'
+          },
+          {
+            id: 8,
+            question: 'How can I contribute?',
+            answer: 'Fork the repo, press F5 to launch the Extension Development Host, and open a pull request.\nGood first changes: a JS/TS risk pattern, a review prompt rule, or a new provider client.\nSee CONTRIBUTING.md and ARCHITECTURE.md in the repository.'
+          }
+        ];
+
+        const handleToggle = (index) => {
+          setOpenIndex(openIndex === index ? null : index);
+        };
+
+        return (
+          <div className="space-y-3 max-w-3xl mx-auto">
+            {faqs.map((faq, index) => (
+              <FAQItem
+                key={faq.id}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openIndex === index}
+                onToggle={() => handleToggle(index)}
+                id={faq.id}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      // Defensive initialization with error handling
+      (function initFAQ() {
+        try {
+          // Verify React and ReactDOM are loaded
+          if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+            throw new Error('React or ReactDOM not loaded');
+          }
+
+          // Verify DOM element exists
+          const container = document.getElementById('faq-accordion');
+          if (!container) {
+            throw new Error('FAQ container element not found');
+          }
+
+          // Create root and render
+          const root = ReactDOM.createRoot(container);
+          root.render(<FAQAccordion />);
+        } catch (error) {
+          // Fallback: display error message in the FAQ container
+          const container = document.getElementById('faq-accordion');
+          if (container) {
+            container.innerHTML = `
+              <div class="rounded-2xl border border-red-800 bg-red-900/20 p-6 text-center">
+                <p class="text-red-400 font-semibold">Unable to load FAQ section</p>
+                <p class="text-red-300 text-sm mt-2">Please refresh the page or check the browser console for details.</p>
+              </div>
+            `;
+          }
+          console.error('FAQ Accordion initialization error:', error);
+        }
+      })();
+    </script>
+    <script src="regression-examples-carousel.js" type="text/babel"></script>
+  <script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+</script>
+</body>
+</html>
+
