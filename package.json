@@ -2,7 +2,7 @@
   "name": "samurai-agent",
   "displayName": "Samurai Agent \u2014 Prevent JS/TS Regressions from AI Edits",
   "description": "Shows regression risk right after AI code edits and lets you review risky JS/TS changes before they ship.",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "license": "MIT",
   "repository": {
     "type": "git",

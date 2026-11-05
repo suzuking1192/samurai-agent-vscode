@@ -2,6 +2,11 @@
 
 All notable changes to the "samurai-agent" extension will be documented in this file.
 
+## [0.4.2] - 2026-11-04
+
+### Fixed
+- Republish to Open VSX after 0.4.1 was stuck inactive on the registry
+
 ## [0.4.1] - 2026-11-04
 
 ### Changed
