@@ -208,3 +208,4 @@ hs_err_pid*
 *.test
 *.out
 go.work
+extension_node_modules/
