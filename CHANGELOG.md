@@ -2,6 +2,11 @@
 
 All notable changes to the "samurai-agent" extension will be documented in this file.
 
+## [0.4.1] - 2026-11-04
+
+### Changed
+- README: lead with the demo video thumbnail and feature visuals for Open VSX / Marketplace pages
+
 ## [0.4.0] - 2026-11-04
 
 ### Changed
